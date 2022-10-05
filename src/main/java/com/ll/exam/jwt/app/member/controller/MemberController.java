@@ -1,5 +1,6 @@
 package com.ll.exam.jwt.app.member.controller;
 
+import lombok.Data;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,22 @@ import javax.security.auth.login.LoginContext;
 public class MemberController {
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<String> login(@RequestBody String body){
+    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authentication","Bearer (jwt accessToken)");
+        String body = "username : %s , password : %s".formatted(loginDto.getUsername(),loginDto.getPassword());
         return new ResponseEntity<>(body, headers ,HttpStatus.OK);
     }
+
+    @Data
+    public static class LoginDto {
+        private String username;
+        private String password;
+
+        public boolean isNotValid(){
+            return username == null || password == null || username.trim().length()==0 || password.trim().length()==0;
+        }
+
+    }
 }
+

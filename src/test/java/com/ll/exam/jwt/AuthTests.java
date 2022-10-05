@@ -48,17 +48,35 @@ class AuthTests {
 
                 )
                 .andDo(print());
+    }
+    @Test
+    @DisplayName("POST /member/login 으로 Authentication 응답 header를 넘겨줄 수 있다.")
+    void t2() throws Exception {
+        // When
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/member/login").with(csrf())
+                                .content("""
+                                        {
+                                            "username": "user1",
+                                            "password": "1234"
+                                        }
+                                        """.stripIndent())
+                                .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
 
+                )
+                .andDo(print());
 
         // Then
         resultActions
                 .andExpect(status().is2xxSuccessful());
 
         MvcResult mvcResult = resultActions.andReturn();
-
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
-
         String authentication = mockHttpServletResponse.getHeader("Authentication");
+        System.out.println("Authentication response header : "+authentication);
         assertThat(authentication).isNotEmpty();
     }
+
+
 }
