@@ -38,8 +38,6 @@ class AuthTests {
         ResultActions resultActions = mvc
                 .perform(
                         post("/member/login").with(csrf())
-
-                                .header("Authentication","Bearer (accessToken)")
                                 .content("""
                                         {
                                             "username": "user1",
