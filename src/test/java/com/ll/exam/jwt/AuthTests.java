@@ -39,7 +39,7 @@ class AuthTests {
                 .perform(
                         post("/member/login").with(csrf())
 
-                                .header("Authentication","Bearer (accessToken")
+                                .header("Authentication","Bearer (accessToken)")
                                 .content("""
                                         {
                                             "username": "user1",
@@ -59,7 +59,6 @@ class AuthTests {
         MvcResult mvcResult = resultActions.andReturn();
 
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
-        mockHttpServletResponse.addHeader("Authentication",mvcResult.getRequest().getHeader("Authentication"));
 
         String authentication = mockHttpServletResponse.getHeader("Authentication");
         assertThat(authentication).isNotEmpty();
