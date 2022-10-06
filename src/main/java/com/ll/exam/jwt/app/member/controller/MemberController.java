@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginContext;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/member")
@@ -30,24 +31,20 @@ public class MemberController {
 
         if(loginDto.isNotValid()){
             return new ResponseEntity(ResultResponse.of("F-1","잘못된 입력입니다." ,loginDto),headers,HttpStatus.BAD_REQUEST);
-
         }
 
-        try{
-            Member member = memberService.findByUsername(loginDto.getUsername());
-
-            if(!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())){
-                return new ResponseEntity(ResultResponse.of("F-1","비밀번호가 일치하지 않습니다." ,loginDto.getUsername()),headers,HttpStatus.BAD_REQUEST);
-            }
-
-
-            String body = "username : %s , password : %s".formatted(loginDto.getUsername(),loginDto.getPassword());
-            return new ResponseEntity(ResultResponse.of("S-1","로그인 성공" ,body),headers,HttpStatus.OK);
-
-        }catch (UsernameNotFoundException e){
-            return new ResponseEntity(ResultResponse.of("F-1",e.getMessage() ,loginDto.getUsername()),headers,HttpStatus.BAD_REQUEST);
-
+        Optional<Member> oMember = memberService.findByUsername(loginDto.getUsername());
+        if(!oMember.isPresent()){
+            return new ResponseEntity(ResultResponse.of("F-1","%s에 해당하는 아이디가 없습니다.".formatted(loginDto.getUsername()) ,loginDto.getUsername()),headers,HttpStatus.BAD_REQUEST);
         }
+        Member member = oMember.get();
+
+        if(!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())){
+            return new ResponseEntity(ResultResponse.of("F-1","비밀번호가 일치하지 않습니다." ,loginDto.getUsername()),headers,HttpStatus.BAD_REQUEST);
+        }
+
+        String body = "username : %s , password : %s".formatted(loginDto.getUsername(),loginDto.getPassword());
+        return new ResponseEntity(ResultResponse.of("S-1","로그인 성공" ,body),headers,HttpStatus.OK);
 
     }
 
