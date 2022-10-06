@@ -2,6 +2,7 @@ package com.ll.exam.jwt.app.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.exam.jwt.app.base.entity.BaseEntity;
+import com.ll.exam.jwt.util.Util;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,7 @@ import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Setter
@@ -37,5 +39,15 @@ public class Member extends BaseEntity {
         authorities.add(new SimpleGrantedAuthority("MEMBER"));
 
         return authorities;
+    }
+    public Map<String, Object> getClaims(){
+        return Util.mapOf(
+                "id",this.getId(),
+                "CreateDate",this.getCreateDate(),
+                "ModifyDate",this.getModifyDate(),
+                "username",this.getUsername(),
+                "email",this.getEmail(),
+                "authorities",this.getAuthorities()
+        );
     }
 }

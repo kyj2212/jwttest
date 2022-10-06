@@ -2,19 +2,28 @@ package com.ll.exam.jwt.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.exam.jwt.util.Util;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -24,7 +33,7 @@ public class JwtProvider {
     private String secretKeyPlain;
 
     private SecretKey jwtSecretKey;
-
+    private final UserDetailsService userDetailsService;
     @PostConstruct
     private void init(){
         System.out.println("[PostConstruct] init Jwt secret key");
@@ -44,6 +53,26 @@ public class JwtProvider {
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(getSecretKey(), SignatureAlgorithm.HS512)
                 .compact();
+    }
+
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaimsJws(token);
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("authorities").toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+        // UserDetails 객체를 만들어서 Authentication 리턴
+        UserDetails principal = new User(claims.getSubject(), "", authorities );
+
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+
+    }
+
+    private Claims parseClaimsJws(String token) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(jwtSecretKey).build().parseClaimsJws(token).getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
     }
 
     public boolean verify(String token) {
