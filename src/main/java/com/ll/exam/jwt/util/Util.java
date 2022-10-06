@@ -3,13 +3,27 @@ package com.ll.exam.jwt.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.exam.jwt.app.AppConfig;
+import com.ll.exam.jwt.app.base.result.ResultResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
 public class Util {
+    public static class spring {
+
+        public static <T> ResponseEntity<ResultResponse> responseEntityOf(ResultResponse<T> rsData) {
+            return responseEntityOf(rsData, null);
+        }
+
+        public static <T> ResponseEntity<ResultResponse> responseEntityOf(ResultResponse<T> rsData, HttpHeaders headers) {
+            return new ResponseEntity<>(rsData, headers, rsData.isSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        }
+    }
     private static ObjectMapper getObjectMapper() {
         return (ObjectMapper) AppConfig.getContext().getBean("objectMapper");
     }

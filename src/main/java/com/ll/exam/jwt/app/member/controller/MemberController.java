@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginContext;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -44,7 +45,7 @@ public class MemberController {
         }
 
         String body = "username : %s , password : %s".formatted(loginDto.getUsername(),loginDto.getPassword());
-        return new ResponseEntity(ResultResponse.of("S-1","로그인 성공" ,body),headers,HttpStatus.OK);
+        return new ResponseEntity(ResultResponse.of("S-1","로그인 성공" ,Map.of("Authentication",headers.get("Authentication").toString())),headers,HttpStatus.OK);
 
     }
 
