@@ -24,6 +24,6 @@ public class MemberService {
     }
 
     public Member findByUsername(String username) {
-        return memberRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("no username + $s".formatted(username)));
+        return memberRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("%s에 해당하는 아이디가 없습니다.".formatted(username)));
     }
 }
