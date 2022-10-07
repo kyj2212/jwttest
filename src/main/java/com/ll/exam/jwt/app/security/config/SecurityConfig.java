@@ -1,6 +1,9 @@
 package com.ll.exam.jwt.app.security.config;
 
+import com.ll.exam.jwt.app.member.service.MemberService;
 import com.ll.exam.jwt.jwt.JwtFilter;
+import com.ll.exam.jwt.jwt.JwtProvider;
+import com.ll.exam.jwt.jwt.JwtSecurityConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +20,9 @@ import org.springframework.security.web.header.writers.frameoptions.XFrameOption
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtProvider jwtProvider;
+    private final MemberService memberService;
 
     /* 인가 구분을 위한 url path 지정 */
 /*
@@ -110,7 +116,9 @@ public class SecurityConfig {
         http
                 .cors().disable();
         http
-                .authorizeRequests().antMatchers("/**").permitAll();
+                .authorizeRequests()
+                .antMatchers("/member/login/**","/member/join/**").permitAll()
+                .antMatchers("/member/me/**").authenticated();
 //                .antMatchers(AUTH_ADMIN_LIST).hasRole("ADMIN") // 403 페이지 대신 alert 로 변경
 //                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 //                .antMatchers(AUTH_ALL_LIST).permitAll()
@@ -138,7 +146,8 @@ public class SecurityConfig {
         http
                 .exceptionHandling()
                 .accessDeniedPage("/restrict");
-
+        http
+             .apply(new JwtSecurityConfig(jwtProvider,memberService));
 
         return http.build();
     }

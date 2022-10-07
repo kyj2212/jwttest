@@ -8,6 +8,7 @@ import com.ll.exam.jwt.jwt.JwtProvider;
 import com.ll.exam.jwt.util.Util;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginContext;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +29,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
+@Slf4j
 public class MemberController {
 
     private final MemberService memberService;
@@ -62,8 +66,8 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ResultResponse> me(@AuthenticationPrincipal MemberContext memberContext ){
-
+    public ResponseEntity<ResultResponse> me(@AuthenticationPrincipal MemberContext memberContext, Principal principal ){
+        log.debug("principal : "+principal);
         return Util.spring.responseEntityOf(ResultResponse.of("S-1","성공" ,memberContext));
     }
     @Data

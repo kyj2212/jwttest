@@ -176,7 +176,7 @@ class AuthTests {
         resultActions = mvc
                 .perform(
                         get("/member/me")
-                                .header("Authorization", "Bearer " + accessToken)
+                                .header("Authorization", accessToken)
                 )
                 .andDo(print());
 

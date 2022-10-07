@@ -1,6 +1,7 @@
 package com.ll.exam.jwt.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ll.exam.jwt.app.security.entity.MemberContext;
 import com.ll.exam.jwt.util.Util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtProvider {
 
     @Value("${custom.jwt.secretKey}")
@@ -56,12 +58,15 @@ public class JwtProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = parseClaimsJws(token);
+
+        Map<String,Object> claims = getClaims(token);
+        log.debug("claims : "+ claims);
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("authorities").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
         // UserDetails 객체를 만들어서 Authentication 리턴
-        UserDetails principal = new User(claims.getSubject(), "", authorities );
+
+        User principal = new User(claims.get("username").toString(),"",authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
 
@@ -87,7 +92,16 @@ public class JwtProvider {
 
         return true;
     }
+    public Claims getClaimsC(String token) {
+        String body = Jwts.parserBuilder()
+                .setSigningKey(getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("body", String.class);
 
+        return (Claims) Util.json.toMap(body);
+    }
     public Map<String, Object> getClaims(String token) {
         String body = Jwts.parserBuilder()
                 .setSigningKey(getSecretKey())
