@@ -1,6 +1,7 @@
 package com.ll.exam.jwt.app.member.controller;
 
 import com.ll.exam.jwt.app.base.result.ResultResponse;
+import com.ll.exam.jwt.app.member.dto.request.LoginDto;
 import com.ll.exam.jwt.app.member.entity.Member;
 import com.ll.exam.jwt.app.member.service.MemberService;
 import com.ll.exam.jwt.app.security.entity.MemberContext;
@@ -70,15 +71,6 @@ public class MemberController {
         log.debug("principal : "+principal);
         return Util.spring.responseEntityOf(ResultResponse.of("S-1","성공" ,memberContext));
     }
-    @Data
-    public static class LoginDto {
-        private String username;
-        private String password;
 
-        public boolean isNotValid(){
-            return username == null || password == null || username.trim().length()==0 || password.trim().length()==0;
-        }
-
-    }
 }
 

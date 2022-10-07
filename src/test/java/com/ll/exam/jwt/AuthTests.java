@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
@@ -157,7 +158,7 @@ class AuthTests {
                                         {
                                             "username": "user1",
                                             "password": "1234"
-                                        }l
+                                        }
                                         """.stripIndent())
                                 .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
                 )
@@ -182,27 +183,18 @@ class AuthTests {
 
         // Then
         resultActions
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.resultCode").value("S-1"))
+                .andExpect(jsonPath("$.message").value("성공"))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.createDate").isNotEmpty())
+                .andExpect(jsonPath("$.data.modifyDate").isNotEmpty())
+                .andExpect(jsonPath("$.data.username").value("user1"))
+                .andExpect(jsonPath("$.data.email").value("user1@test.com"))
+                .andExpect(jsonPath("$.data.authorities").isNotEmpty())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.fail").value(false));
 
-        // MemberController me 메서드에서는 @AuthenticationPrincipal MemberContext memberContext 를 사용해서 현재 로그인 한 회원의 정보를 얻어야 한다.
-
-        // 추가
-        // /member/me 에 응답 본문
-        /*
-          {
-            "resultCode": "S-1",
-            "msg": "성공",
-            "data": {
-              "id": 1,
-              "createData": "날짜",
-              "modifyData": "날짜",
-              "username": "user1",
-              "email": "user1@test.com"
-            }
-            "success": true,
-            "fail": false
-          }
-       */
     }
 
 }

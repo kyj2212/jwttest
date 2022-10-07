@@ -3,6 +3,9 @@ spring:
     active: dev
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
   output.ansi.enabled: ALWAYS
 logging:
   level:

@@ -2,6 +2,8 @@ package com.ll.exam.jwt.app.base.result;
 
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 public class ResultResponse<T> {
     private String resultCode;
@@ -21,6 +23,15 @@ public class ResultResponse<T> {
     public static <T> ResultResponse<T> of(String resultCode, String message) {
         return new ResultResponse<>(resultCode,message,null);
     }
+
+    public static <T> ResultResponse<T> successOf(T data) {
+        return of("S-1", "성공", data);
+    }
+
+    public static <T> ResultResponse<T> failOf(T data) {
+        return of("F-1", "실패", data);
+    }
+
     public boolean isSuccess() {
         return resultCode.startsWith("S-1");
     }

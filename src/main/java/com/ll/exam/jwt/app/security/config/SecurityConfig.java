@@ -144,6 +144,8 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true);*/
         http
+                .httpBasic().disable();
+        http
                 .exceptionHandling()
                 .accessDeniedPage("/restrict");
         http

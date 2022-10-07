@@ -2,9 +2,12 @@ package com.ll.exam.jwt.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ll.exam.jwt.app.AppConfig;
 import com.ll.exam.jwt.app.base.result.ResultResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +15,35 @@ import org.springframework.http.ResponseEntity;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
+
 public class Util {
+
+    private static ObjectMapper getObjectMapper() {
+        ObjectMapper mapper = (ObjectMapper) AppConfig.getContext().getBean("objectMapper");
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return mapper;
+    }
+
+    public static class json {
+
+        public static Object toStr(Map<String, Object> map) {
+            try {
+                return getObjectMapper().writeValueAsString(map);
+            } catch (JsonProcessingException e) {
+                return null;
+            }
+        }
+
+        public static Map<String, Object> toMap(String jsonStr) {
+            try {
+                return getObjectMapper().readValue(jsonStr, LinkedHashMap.class);
+            } catch (JsonProcessingException e) {
+                return null;
+            }
+        }
+    }
+
     public static <K, V> Map<K, V> mapOf(Object... args) {
         Map<K, V> map = new LinkedHashMap<>();
         int size = args.length / 2;
@@ -49,26 +79,5 @@ public class Util {
         }
 
     }
-    private static ObjectMapper getObjectMapper() {
-        return (ObjectMapper) AppConfig.getContext().getBean("objectMapper");
-    }
 
-    public static class json {
-
-        public static Object toStr(Map<String, Object> map) {
-            try {
-                return getObjectMapper().writeValueAsString(map);
-            } catch (JsonProcessingException e) {
-                return null;
-            }
-        }
-
-        public static Map<String, Object> toMap(String jsonStr) {
-            try {
-                return getObjectMapper().readValue(jsonStr, LinkedHashMap.class);
-            } catch (JsonProcessingException e) {
-                return null;
-            }
-        }
-    }
 }

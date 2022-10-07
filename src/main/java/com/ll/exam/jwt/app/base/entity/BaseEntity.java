@@ -27,10 +27,13 @@ public class BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
     @CreatedDate
     private LocalDateTime createDate;
+
     @LastModifiedDate
     private LocalDateTime modifyDate;
+
     @Transient // 아래 필드가 DB 필드가 되는 것을 막는다.
     @Builder.Default
     private Map<String, Object> extra = new LinkedHashMap<>();
