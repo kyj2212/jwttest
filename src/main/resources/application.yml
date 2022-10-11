@@ -10,7 +10,7 @@ spring:
 logging:
   level:
     com.ll.exam.jwt: debug
-
+server.servlet.encoding.force-response: true
 custom:
   jwt:
     secretKey: secretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKey

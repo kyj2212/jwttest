@@ -18,12 +18,22 @@ repositories {
 	mavenCentral()
 }
 
+
+// Log4J2 Vulnerability (CVE-2021-44228, CVE-2021-45046)
+// https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228
+// https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046
+// https://logging.apache.org/log4j/2.x/security.html
+// https://spring.io/blog/2021/12/10/log4j2-vulnerability-and-spring-boot
+ext['log4j2.version'] = '2.16.0'
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation ('org.springframework.boot:spring-boot-starter-test'){
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
 	testImplementation 'org.springframework.security:spring-security-test'
 	// spring security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -40,6 +50,9 @@ dependencies {
 
 	// dto validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// mustache
+	implementation 'org.springframework.boot:spring-boot-starter-mustache'
 }
 
 tasks.named('test') {
